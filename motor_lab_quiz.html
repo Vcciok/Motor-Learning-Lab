@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Juncheng Wu · Motor Learning Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #020617;
+      --card: #020617;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.12);
+      --accent-strong: rgba(34, 197, 94, 0.7);
+      --border-subtle: rgba(148, 163, 184, 0.3);
+      --border-strong: rgba(148, 163, 184, 0.6);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --error: #f97373;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", Roboto, sans-serif;
+      background:
+        radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.15), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(34, 197, 94, 0.2), transparent 55%),
+        var(--bg);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: 1024px;
+      margin: 24px auto 40px;
+      padding: 0 16px;
+    }
+
+    header.lab-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .lab-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lab-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 18px rgba(34, 197, 94, 0.95);
+    }
+
+    .lab-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid var(--border-strong);
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(18px);
+    }
+
+    section.card {
+      background: rgba(15, 23, 42, 0.88);
+      border-radius: 22px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.7);
+      padding: 22px 22px 20px;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .fade-in {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .fade-out {
+      opacity: 0;
+      transform: translateY(12px) scale(0.99);
+      pointer-events: none;
+    }
+
+    .login-inner {
+      max-width: 420px;
+      margin: 32px auto 12px;
+      text-align: center;
+    }
+
+    .login-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .login-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    .input-wrap {
+      text-align: left;
+      margin-bottom: 12px;
+    }
+
+    .input-label {
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s ease, box-shadow 0.2s ease, background 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft);
+      background: #020617;
+    }
+
+    .error-text {
+      min-height: 18px;
+      font-size: 12px;
+      color: var(--error);
+      margin-top: 4px;
+    }
+
+    .login-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 9px 18px;
+      font-size: 14px;
+      background: #111827;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s ease;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #011;
+      font-weight: 600;
+      box-shadow: 0 16px 30px rgba(34, 197, 94, 0.32);
+    }
+
+    button.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 20px 40px rgba(34, 197, 94, 0.42);
+    }
+
+    button.secondary {
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    button.secondary:hover {
+      background: #020617;
+    }
+
+    .quiz-header-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .quiz-header-line strong {
+      color: var(--text-main);
+    }
+
+    .chip {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .question-shell {
+      position: relative;
+    }
+
+    .question-card {
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.18), transparent 60%),
+                  var(--card);
+      border-radius: 18px;
+      padding: 14px 14px 12px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      transition: border 0.2s ease, background 0.2s ease, transform 0.16s ease,
+                  opacity 0.28s ease, transform 0.28s ease;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .question-card.correct {
+      border-color: var(--accent-strong);
+      background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.28), transparent 60%),
+                  #022c22;
+    }
+
+    .question-card.incorrect {
+      border-color: rgba(248, 113, 113, 0.9);
+      background: radial-gradient(circle at top left, rgba(248, 113, 113, 0.18), transparent 60%),
+                  #1f2933;
+    }
+
+    .slide-out {
+      opacity: 0;
+      transform: translateX(-18px);
+    }
+
+    .slide-in {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .question-index {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .question-type {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .type-tf {
+      background: rgba(59, 130, 246, 0.12);
+      color: #93c5fd;
+    }
+
+    .type-mc {
+      background: rgba(249, 115, 22, 0.12);
+      color: #fed7aa;
+    }
+
+    .question-text {
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .options {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+
+    label.option {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 8px;
+      transition: background 0.15s ease;
+      font-size: 14px;
+    }
+
+    label.option:hover {
+      background: rgba(31, 41, 55, 0.92);
+    }
+
+    input[type="radio"] {
+      margin-top: 3px;
+      accent-color: var(--accent);
+    }
+
+    .mini-feedback {
+      font-size: 12px;
+      margin-top: 4px;
+      color: var(--text-muted);
+    }
+
+    .mini-feedback.correct {
+      color: #4ade80;
+    }
+
+    .mini-feedback.incorrect {
+      color: #fca5a5;
+    }
+
+    .quiz-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .time-pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      font-size: 11px;
+    }
+
+    .result-main {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .result-topline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .score-pill {
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-strong);
+      color: #bbf7d0;
+      font-weight: 600;
+    }
+
+    .comment-pill {
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.18);
+      border: 1px solid var(--border-strong);
+      color: var(--text-main);
+    }
+
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .time-list {
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(75, 85, 99, 0.9);
+      font-size: 12px;
+      color: var(--text-muted);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .time-list-item {
+      margin-bottom: 2px;
+    }
+
+    .review-list {
+      margin-top: 10px;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .review-card {
+      background: radial-gradient(circle at top left, rgba(248, 113, 113, 0.2), transparent 60%),
+                  #111827;
+      border-radius: 16px;
+      border: 1px solid rgba(248, 113, 113, 0.9);
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .review-card strong {
+      color: #fecaca;
+    }
+
+    @media (max-width: 700px) {
+      .shell {
+        margin-top: 16px;
+      }
+      header.lab-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+      .lab-title {
+        font-size: 18px;
+      }
+      section.card {
+        padding: 18px 14px 16px;
+        border-radius: 18px;
+      }
+      .quiz-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="lab-header">
+      <div>
+        <div class="lab-title">
+          <span class="lab-dot"></span>
+          Juncheng Wu · Motor Learning Lab
+        </div>
+        <div class="lab-subtitle">
+          运动学习与控制 · 在线自测系统
+        </div>
+      </div>
+      <div class="pill">Made with ChatGPT · 比 Gemini 更丝滑😏</div>
+    </header>
+
+    <!-- 登录 -->
+    <section id="login-screen" class="card fade-in">
+      <div class="login-inner">
+        <div class="login-title">输入学号进行测试页面</div>
+        <div class="login-desc">
+          本测试仅供指定学生自测使用。<br />
+          请输入你的真实学号后开始作答。
+        </div>
+
+        <div class="input-wrap">
+          <div class="input-label">学号 Student ID</div>
+          <input
+            id="student-id"
+            class="input-field"
+            placeholder="例如：2201XXXX"
+            autocomplete="off"
+          />
+          <div id="login-error" class="error-text"></div>
+        </div>
+
+        <div class="login-footer">
+          <span>本测试系统仅允许使用真实学号。</span>
+          <button id="login-btn" class="primary">进入测试</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 答题页面：每次只显示一题 -->
+    <section id="quiz-screen" class="card hidden">
+      <div class="quiz-header-line">
+        <div>
+          <span id="progress-text"></span> ·
+          当前题用时：<span id="current-time">0.0s</span>
+        </div>
+        <div class="chip" id="user-id-chip"></div>
+      </div>
+
+      <div class="question-shell">
+        <div id="question-card" class="question-card"></div>
+      </div>
+
+      <div class="quiz-footer">
+        <div class="time-pill">
+          总题数：<span id="total-count">0</span>；
+          判断题：<span id="tf-count">0</span>；
+          单选题：<span id="mc-count">0</span>
+        </div>
+        <button id="next-btn" class="primary" disabled>下一题</button>
+      </div>
+    </section>
+
+    <!-- 成绩页面 -->
+    <section id="result-screen" class="card hidden">
+      <div class="result-main">
+        <div class="result-topline">
+          <div id="score-pill" class="score-pill"></div>
+          <div id="comment-pill" class="comment-pill"></div>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">
+          学号：<span id="result-id"></span> ·
+          总用时：<span id="total-time"></span>
+        </div>
+
+        <div class="result-actions">
+          <button id="review-btn" class="secondary">错题速览</button>
+          <button id="export-btn" class="secondary">导出成绩单</button>
+          <button id="restart-btn" class="secondary">重新测试</button>
+        </div>
+
+        <div class="time-list">
+          <div style="margin-bottom:4px;">每题用时（秒）：</div>
+          <div id="time-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 错题页面 -->
+    <section id="review-screen" class="card hidden">
+      <div style="font-size:15px;font-weight:600;margin-bottom:6px;">
+        错题速览
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">
+        仅展示本次作答中回答错误或未作答的题目，便于针对性复习。
+      </div>
+      <div id="review-list" class="review-list"></div>
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button id="back-to-result" class="secondary">返回成绩页面</button>
+        <button id="back-to-start" class="secondary">回到首页</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ---------- 题库：与上一版相同 40 题 ----------
+    const questions = [
+      // 判断题 1-20
+      {
+        id: "Q1",
+        type: "tf",
+        text: "零迁移不代表没有迁移发生，只是评价方法中未被察觉，或正负迁移互相抵消。",
+        correct: "A",
+        explanation: "零迁移可能被相互抵消或测量不到，不等于完全没有迁移。"
+      },
+      {
+        id: "Q2",
+        type: "tf",
+        text: "正迁移是学习者最愿见到的一种迁移形式。",
+        correct: "A",
+        explanation: "正迁移能让旧经验帮助新技能，是最理想的情况。"
+      },
+      {
+        id: "Q3",
+        type: "tf",
+        text: "足球守门员的扑救动作属于闭合环路控制。",
+        correct: "A",
+        explanation: "扑救依赖视觉等反馈实时修正动作，属于闭环控制。"
+      },
+      {
+        id: "Q4",
+        type: "tf",
+        text: "在学习初期，应频繁地提供追加反馈以帮助形成基本运动模式。",
+        correct: "A",
+        explanation: "初学阶段内部反馈弱，高频追加反馈有助于建立正确动作。"
+      },
+      {
+        id: "Q5",
+        type: "tf",
+        text: "从刺激信号出现到动作结束的时间称为反应时间。",
+        correct: "B",
+        explanation: "这段叫应答时间，反应时间只到动作开始为止。"
+      },
+      {
+        id: "Q6",
+        type: "tf",
+        text: "带宽反馈、小结反馈、平均反馈、自我控制反馈都能有效降低反馈频率。",
+        correct: "A",
+        explanation: "这四种策略本质都是“少而精”的反馈设计。"
+      },
+      {
+        id: "Q7",
+        type: "tf",
+        text: "小班授课中应避免反馈频率超过 50%， 以免产生依赖作用。",
+        correct: "A",
+        explanation: "反馈过半容易让学生过度依赖外部信息。"
+      },
+      {
+        id: "Q8",
+        type: "tf",
+        text: "暂停和休息时间长于练习时间的练习属于集中练习。",
+        correct: "B",
+        explanation: "这是分散练习，集中练习是休息时间短于或等于练习时间。"
+      },
+      {
+        id: "Q9",
+        type: "tf",
+        text: "随着练习，运动技能的协调性增强、参与肌群重组优化，是学习的重要特征。",
+        correct: "A",
+        explanation: "学习不仅快，还体现在动作更协调、用肌更合理。"
+      },
+      {
+        id: "Q10",
+        type: "tf",
+        text: "技能动作简单、元素少、相关度高时，应采用整体练习。",
+        correct: "A",
+        explanation: "整体练习适合简单且结构紧密的技能。"
+      },
+      {
+        id: "Q11",
+        type: "tf",
+        text: "视觉流能提供稳定性、平衡、环境运动速度等动作信息。",
+        correct: "A",
+        explanation: "视觉流反映自我与环境的相对运动，是姿态与平衡的重要线索。"
+      },
+      {
+        id: "Q12",
+        type: "tf",
+        text: "自动化阶段应提升练习者战术意识和战略思维能力。",
+        correct: "A",
+        explanation: "技术已基本自动化，此时重点是战术与决策。"
+      },
+      {
+        id: "Q13",
+        type: "tf",
+        text: "根据菲茨定律，目标大小固定时，动作幅度越大，动作时间增加越明显。",
+        correct: "B",
+        explanation: "难度由距离和目标大小共同决定，这个说法不严谨。"
+      },
+      {
+        id: "Q14",
+        type: "tf",
+        text: "认知决策具有线索多、速度快、时间充足的特点。",
+        correct: "A",
+        explanation: "认知决策依靠丰富线索和分析，往往有较充裕时间。"
+      },
+      {
+        id: "Q15",
+        type: "tf",
+        text: "同步追加反馈容易造成信息超载。",
+        correct: "A",
+        explanation: "边做边讲一堆很容易让学习者大脑爆满。"
+      },
+      {
+        id: "Q16",
+        type: "tf",
+        text: "动作学习包括认知阶段、联结阶段、自动化阶段。",
+        correct: "A",
+        explanation: "这是经典的三阶段划分。"
+      },
+      {
+        id: "Q17",
+        type: "tf",
+        text: "观察示范能让练习者获得动作的时间信息、空间信息和协调模式。",
+        correct: "A",
+        explanation: "示范提供了“动作长什么样、怎么连”的直观模板。"
+      },
+      {
+        id: "Q18",
+        type: "tf",
+        text: "连续性技能与否根据动作是否有明显开始与结束进行区分。",
+        correct: "A",
+        explanation: "连续性技能没有清晰的起止界限。"
+      },
+      {
+        id: "Q19",
+        type: "tf",
+        text: "随机练习是将多种活动依固定顺序进行练习，直到全部完成。",
+        correct: "B",
+        explanation: "固定顺序叫群组/序列练习，随机练习顺序是打乱的。"
+      },
+      {
+        id: "Q20",
+        type: "tf",
+        text: "连续性运动技能可以随时利用感官信息和反馈进行动作修正。",
+        correct: "A",
+        explanation: "连续性技能多为闭环控制，可以边做边修正。"
+      },
+      // 单选题 21-40
+      {
+        id: "Q21",
+        type: "mc",
+        text: "根据环境的稳定性和可预测性，运动技能可分为：",
+        options: ["大小肌群技能", "开放式与闭锁式技能", "离散与连续技能", "简单与复杂技能"],
+        correct: "B",
+        explanation: "是否受环境变化影响，是开放式/闭锁式划分的依据。"
+      },
+      {
+        id: "Q22",
+        type: "mc",
+        text: "自我控制反馈是指：",
+        options: [
+          "教练决定是否给反馈",
+          "练习者可自行决定是否获得反馈",
+          "按固定频率给反馈",
+          "动作错误必定反馈"
+        ],
+        correct: "B",
+        explanation: "主导权在练习者，他想要才向教练“要答案”。"
+      },
+      {
+        id: "Q23",
+        type: "mc",
+        text: "视觉主导现象是指：",
+        options: [
+          "视觉不稳定",
+          "视觉取代其他感觉",
+          "视觉识别颜色",
+          "视觉导致动作错误"
+        ],
+        correct: "B",
+        explanation: "当视觉和其他感觉冲突时，大脑更信眼睛。"
+      },
+      {
+        id: "Q24",
+        type: "mc",
+        text: "跑步跨栏预测起跨位置主要依赖：",
+        options: ["外周视觉", "触觉", "中央视觉", "听觉"],
+        correct: "C",
+        explanation: "起跨点判断需要清晰看到栏架的空间位置。"
+      },
+      {
+        id: "Q25",
+        type: "mc",
+        text: "随机练习与群组练习主要差别在于：",
+        options: ["次数", "环境", "动作难度", "顺序"],
+        correct: "D",
+        explanation: "两者都多任务练习，最大区别是任务出场顺序。"
+      },
+      {
+        id: "Q26",
+        type: "mc",
+        text: "下列属于直觉决策特点的是：",
+        options: [
+          "线索多速度慢",
+          "线索少速度快时间紧迫",
+          "时间充足速度快",
+          "线索少时间充足"
+        ],
+        correct: "B",
+        explanation: "典型场景就是比赛中的瞬间选择。"
+      },
+      {
+        id: "Q27",
+        type: "mc",
+        text: "带宽反馈指：",
+        options: [
+          "每次都反馈",
+          "要求才反馈",
+          "超过误差范围才反馈",
+          "每分钟一次反馈"
+        ],
+        correct: "C",
+        explanation: "只有偏差超出“带宽”才提醒，避免碎碎念。"
+      },
+      {
+        id: "Q28",
+        type: "mc",
+        text: "下列属于连续性技能的是：",
+        options: ["网球发球", "投篮", "跑步", "引体向上"],
+        correct: "C",
+        explanation: "跑步动作前后没有明显分界，是连续循环。"
+      },
+      {
+        id: "Q29",
+        type: "mc",
+        text: "自由度指：",
+        options: ["心理能力", "肌肉与关节的可控维度", "动作速度", "动作时间"],
+        correct: "B",
+        explanation: "需要控制的肌肉和关节维度越多，自由度越高。"
+      },
+      {
+        id: "Q30",
+        type: "mc",
+        text: "短跑运动员听到枪声起跑属于：",
+        options: ["简单反应", "选择反应", "复杂反应", "反向反应"],
+        correct: "A",
+        explanation: "单一刺激对应单一动作，就是简单反应。"
+      },
+      {
+        id: "Q31",
+        type: "mc",
+        text: "中央视觉主要功能是：",
+        options: ["判断速度", "识别形状颜色细节", "判断平衡", "获取方向"],
+        correct: "B",
+        explanation: "中央凹视野分辨率最高，用来认“是什么”。"
+      },
+      {
+        id: "Q32",
+        type: "mc",
+        text: "闭合环路控制特征是：",
+        options: ["无反馈", "有比较器可纠正动作", "完全自动", "随机控制"],
+        correct: "B",
+        explanation: "闭环有反馈和比较器，能边做边纠错。"
+      },
+      {
+        id: "Q33",
+        type: "mc",
+        text: "运动信息处理包括：",
+        options: [
+          "输出→输入→决策",
+          "输入→处理→输出",
+          "输入→输出→学习",
+          "输出→决策→输入"
+        ],
+        correct: "B",
+        explanation: "标准三步：感知输入 → 中枢加工 → 运动输出。"
+      },
+      {
+        id: "Q34",
+        type: "mc",
+        text: "集中练习适用于：",
+        options: [
+          "技能复杂",
+          "单一技能需大量重复",
+          "技能简单无需体能",
+          "长时间动作"
+        ],
+        correct: "B",
+        explanation: "对于需要很多次重复的单一技能，集中练习更高效。"
+      },
+      {
+        id: "Q35",
+        type: "mc",
+        text: "高水平技能表现是：",
+        options: [
+          "动作耗时长",
+          "准确性高且能量消耗低",
+          "准确性低速度快",
+          "心理压力高"
+        ],
+        correct: "B",
+        explanation: "又准又省力，这才叫真正高水平。"
+      },
+      {
+        id: "Q36",
+        type: "mc",
+        text: "短时记忆特点：",
+        options: ["容量巨大", "保持极长", "可提取演练处理信息", "不参与学习"],
+        correct: "C",
+        explanation: "工作记忆负责暂存并操作当前正在用的信息。"
+      },
+      {
+        id: "Q37",
+        type: "mc",
+        text: "连续性运动技能特征：",
+        options: [
+          "明显开始与结束",
+          "动作独立",
+          "前后动作无界限连续",
+          "无反馈"
+        ],
+        correct: "C",
+        explanation: "动作一个接一个连着，没有清晰分段。"
+      },
+      {
+        id: "Q38",
+        type: "mc",
+        text: "观察示范可获得：",
+        options: [
+          "变化练习",
+          "动作时间、空间和协调信息",
+          "能量消耗",
+          "降低自由度"
+        ],
+        correct: "B",
+        explanation: "示范让你看到“节奏、路线和配合”。"
+      },
+      {
+        id: "Q39",
+        type: "mc",
+        text: "认知阶段特点：",
+        options: [
+          "自动化",
+          "错误少",
+          "依赖语言思考理解动作",
+          "依赖内部反馈"
+        ],
+        correct: "C",
+        explanation: "一开始主要靠听和想，脑子非常忙。"
+      },
+      {
+        id: "Q40",
+        type: "mc",
+        text: "外周视觉主要用于：",
+        options: [
+          "分辨细节",
+          "识别颜色",
+          "判断物体运动与位置",
+          "判断图案"
+        ],
+        correct: "C",
+        explanation: "外周视觉帮你感知周边物体“在哪、怎么动”。"
+      }
+    ];
+
+    // 给判断题补 options
+    questions.forEach(q => {
+      if (q.type === "tf" && !q.options) {
+        q.options = ["对", "错"];
+      }
+    });
+
+    const VALID_IDS = ["22011001", "22011014"];
+
+    // DOM
+    const loginScreen = document.getElementById("login-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const reviewScreen = document.getElementById("review-screen");
+
+    const idInput = document.getElementById("student-id");
+    const loginError = document.getElementById("login-error");
+    const loginBtn = document.getElementById("login-btn");
+
+    const progressText = document.getElementById("progress-text");
+    const currentTimeEl = document.getElementById("current-time");
+    const userIdChip = document.getElementById("user-id-chip");
+    const questionCard = document.getElementById("question-card");
+    const nextBtn = document.getElementById("next-btn");
+
+    const totalCountEl = document.getElementById("total-count");
+    const tfCountEl = document.getElementById("tf-count");
+    const mcCountEl = document.getElementById("mc-count");
+
+    const scorePill = document.getElementById("score-pill");
+    const commentPill = document.getElementById("comment-pill");
+    const resultIdEl = document.getElementById("result-id");
+    const totalTimeEl = document.getElementById("total-time");
+    const timeListEl = document.getElementById("time-list");
+
+    const reviewListEl = document.getElementById("review-list");
+
+    const reviewBtn = document.getElementById("review-btn");
+    const exportBtn = document.getElementById("export-btn");
+    const restartBtn = document.getElementById("restart-btn");
+    const backToResultBtn = document.getElementById("back-to-result");
+    const backToStartBtn = document.getElementById("back-to-start");
+
+    let quizState = {
+      studentId: "",
+      currentIndex: 0,
+      answers: [],
+      correctFlags: [],
+      times: [],
+      questionStartTime: 0,
+      quizStartTime: 0,
+      timerInterval: null,
+      locked: [] // true once answered，防止反悔
+    };
+
+    function initCounts() {
+      const tfNum = questions.filter(q => q.type === "tf").length;
+      const mcNum = questions.filter(q => q.type === "mc").length;
+      totalCountEl.textContent = questions.length;
+      tfCountEl.textContent = tfNum;
+      mcCountEl.textContent = mcNum;
+    }
+
+    function showScreen(screen) {
+      [loginScreen, quizScreen, resultScreen, reviewScreen].forEach(s => {
+        s.classList.add("hidden");
+      });
+      screen.classList.remove("hidden");
+      screen.classList.add("fade-in");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // 登录
+    loginBtn.addEventListener("click", () => {
+      const id = idInput.value.trim();
+      if (!VALID_IDS.includes(id)) {
+        loginError.textContent = "学号不在本次测试名单中，请检查后再试。";
+        return;
+      }
+      loginError.textContent = "";
+      quizState.studentId = id;
+      startQuiz();
+    });
+
+    idInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") loginBtn.click();
+    });
+
+    function startQuiz() {
+      quizState.currentIndex = 0;
+      quizState.answers = Array(questions.length).fill(null);
+      quizState.correctFlags = Array(questions.length).fill(false);
+      quizState.times = Array(questions.length).fill(0);
+      quizState.locked = Array(questions.length).fill(false);
+      quizState.quizStartTime = performance.now();
+      userIdChip.textContent = `当前学号：${quizState.studentId}`;
+
+      showScreen(quizScreen);
+      renderQuestion();
+    }
+
+    function startQuestionTimer() {
+      if (quizState.timerInterval) {
+        clearInterval(quizState.timerInterval);
+      }
+      quizState.questionStartTime = performance.now();
+      currentTimeEl.textContent = "0.0s";
+      quizState.timerInterval = setInterval(() => {
+        const elapsed =
+          (performance.now() - quizState.questionStartTime) / 1000;
+        currentTimeEl.textContent = elapsed.toFixed(1) + "s";
+      }, 100);
+    }
+
+    function renderQuestion() {
+      const idx = quizState.currentIndex;
+      const q = questions[idx];
+      progressText.textContent = `第 ${idx + 1} / ${questions.length} 题`;
+      nextBtn.disabled = true;
+      nextBtn.textContent =
+        idx === questions.length - 1 ? "查看成绩" : "下一题";
+
+      // 清空并重新渲染
+      questionCard.className = "question-card";
+      questionCard.innerHTML = "";
+
+      const header = document.createElement("div");
+      header.className = "question-header";
+
+      const index = document.createElement("div");
+      index.className = "question-index";
+      index.textContent = q.type === "tf" ? "判断题" : "单项选择";
+
+      const typeTag = document.createElement("div");
+      typeTag.className =
+        "question-type " + (q.type === "tf" ? "type-tf" : "type-mc");
+      typeTag.textContent = q.type === "tf" ? "T / F" : "MCQ";
+
+      header.appendChild(index);
+      header.appendChild(typeTag);
+
+      const text = document.createElement("div");
+      text.className = "question-text";
+      text.textContent = q.text;
+
+      const optionsDiv = document.createElement("div");
+      optionsDiv.className = "options";
+
+      q.options.forEach((optText, i) => {
+        const label = document.createElement("label");
+        label.className = "option";
+
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = q.id;
+        const letter = String.fromCharCode(65 + i);
+        input.value = letter;
+
+        const span = document.createElement("span");
+        span.textContent = `${letter}. ${optText}`;
+
+        label.appendChild(input);
+        label.appendChild(span);
+        optionsDiv.appendChild(label);
+      });
+
+      const fb = document.createElement("div");
+      fb.className = "mini-feedback";
+      fb.dataset.role = "mini-feedback";
+
+      questionCard.appendChild(header);
+      questionCard.appendChild(text);
+      questionCard.appendChild(optionsDiv);
+      questionCard.appendChild(fb);
+
+      // 小动画
+      questionCard.classList.remove("slide-out");
+      void questionCard.offsetWidth;
+      questionCard.classList.add("slide-in");
+
+      attachQuestionHandlers(q, fb);
+      startQuestionTimer();
+    }
+
+    function attachQuestionHandlers(q, fb) {
+      const radios = questionCard.querySelectorAll("input[type=radio]");
+      let answered = false;
+
+      radios.forEach(radio => {
+        radio.addEventListener("change", () => {
+          const idx = quizState.currentIndex;
+          if (answered || quizState.locked[idx]) return; // 防反悔
+
+          answered = true;
+          quizState.locked[idx] = true;
+
+          const selected = radio.value;
+          quizState.answers[idx] = selected;
+
+          const elapsed =
+            (performance.now() - quizState.questionStartTime) / 1000;
+          quizState.times[idx] = elapsed;
+          clearInterval(quizState.timerInterval);
+          currentTimeEl.textContent = elapsed.toFixed(1) + "s";
+
+          const allRadios = questionCard.querySelectorAll("input[type=radio]");
+          allRadios.forEach(r => (r.disabled = true)); // 锁定答案
+
+          questionCard.classList.remove("correct", "incorrect");
+          if (selected === q.correct) {
+            quizState.correctFlags[idx] = true;
+            questionCard.classList.add("correct");
+            fb.classList.add("correct");
+            fb.classList.remove("incorrect");
+            fb.textContent =
+              "✅ 正确。" + (q.explanation || "本题考查关键概念已掌握。");
+          } else {
+            quizState.correctFlags[idx] = false;
+            questionCard.classList.add("incorrect");
+            fb.classList.add("incorrect");
+            fb.classList.remove("correct");
+            fb.textContent =
+              "❌ 不对，正确答案是 " +
+              q.correct +
+              "。 " +
+              (q.explanation || "");
+          }
+
+          nextBtn.disabled = false;
+        });
+      });
+    }
+
+    nextBtn.addEventListener("click", () => {
+      const idx = quizState.currentIndex;
+      if (idx < questions.length - 1) {
+        // 切换到下一题
+        questionCard.classList.remove("slide-in");
+        questionCard.classList.add("slide-out");
+        setTimeout(() => {
+          quizState.currentIndex++;
+          renderQuestion();
+        }, 200);
+      } else {
+        // 最后一题 -> 成绩页面
+        clearInterval(quizState.timerInterval);
+        showResult();
+      }
+    });
+
+    function showResult() {
+      // 成绩计算
+      const total = questions.length;
+      let correctCount = 0;
+      quizState.correctFlags.forEach(f => {
+        if (f) correctCount++;
+      });
+      const score = Math.round((correctCount / total) * 100);
+      const totalTimeMs =
+        performance.now() - quizState.quizStartTime;
+      const totalSeconds = totalTimeMs / 1000;
+
+      scorePill.textContent = `得分：${correctCount} / ${total}（${score} 分）`;
+      let comment = "";
+      if (score >= 90) {
+        comment = "天才只是见我的门槛。";
+      } else if (score >= 80) {
+        comment = "还行吧，刚好没挂科。";
+      } else if (score >= 70) {
+        comment = "你也就那样吧。";
+      } else if (score >= 60) {
+        comment = "这点分你还活不？";
+      } else {
+        comment = "今晚别睡了，也别起飞，好好复习。";
+      }
+      commentPill.textContent = comment;
+
+      resultIdEl.textContent = quizState.studentId;
+      totalTimeEl.textContent = totalSeconds.toFixed(1) + " 秒";
+
+      // 每题用时列表
+      timeListEl.innerHTML = "";
+      quizState.times.forEach((t, i) => {
+        const div = document.createElement("div");
+        div.className = "time-list-item";
+        div.textContent = `第 ${i + 1} 题：${t.toFixed(1)} 秒`;
+        timeListEl.appendChild(div);
+      });
+
+      showScreen(resultScreen);
+    }
+
+    // 错题速览
+    reviewBtn.addEventListener("click", () => {
+      reviewListEl.innerHTML = "";
+      questions.forEach((q, i) => {
+        if (quizState.correctFlags[i]) return;
+        const userAns = quizState.answers[i] || "未作答";
+        const card = document.createElement("div");
+        card.className = "review-card";
+        card.innerHTML = `
+          <div><strong>第 ${i + 1} 题：</strong>${q.text}</div>
+          <div style="margin-top:3px;">你的答案：${userAns}；正确答案：${q.correct}</div>
+          <div style="margin-top:3px;">解析：${q.explanation || "本题考查关键概念，请回顾课堂笔记。"
+          }</div>
+        `;
+        reviewListEl.appendChild(card);
+      });
+      if (!reviewListEl.children.length) {
+        reviewListEl.innerHTML =
+          '<div class="review-card">🎉 本次没有错题，可以放心起飞（但别太飘）。</div>';
+      }
+      showScreen(reviewScreen);
+    });
+
+    backToResultBtn.addEventListener("click", () => {
+      showScreen(resultScreen);
+    });
+
+    backToStartBtn.addEventListener("click", () => {
+      showScreen(loginScreen);
+    });
+
+    restartBtn.addEventListener("click", () => {
+      startQuiz();
+    });
+
+    // 导出成绩单（文本文件）
+    exportBtn.addEventListener("click", () => {
+      const total = questions.length;
+      let correctCount = 0;
+      quizState.correctFlags.forEach(f => {
+        if (f) correctCount++;
+      });
+      const score = Math.round((correctCount / total) * 100);
+      let comment = commentPill.textContent || "";
+
+      const totalTimeMs =
+        performance.now() - quizState.quizStartTime;
+      const totalSeconds = totalTimeMs / 1000;
+
+      let lines = [];
+      lines.push("Juncheng Wu · Motor Learning Lab 成绩单");
+      lines.push("---------------------------------------");
+      lines.push("学号: " + quizState.studentId);
+      lines.push("总得分: " + score + " 分");
+      lines.push("评语: " + comment);
+      lines.push("总用时: " + totalSeconds.toFixed(1) + " 秒");
+      lines.push("");
+      lines.push("逐题情况：");
+      questions.forEach((q, i) => {
+        const userAns = quizState.answers[i] || "未作答";
+        const flag = quizState.correctFlags[i] ? "✔" : "✘";
+        const t = quizState.times[i].toFixed(1);
+        lines.push(
+          `第 ${i + 1} 题 [${flag}] 用时 ${t} 秒 | 你的答案：${userAns} | 正确答案：${q.correct} | 题干：${q.text}`
+        );
+      });
+
+      const blob = new Blob([lines.join("\n")], {
+        type: "text/plain;charset=utf-8"
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "motor_learning_result.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // 初始化
+    (function init() {
+      initCounts();
+    })();
+  </script>
+</body>
+</html>
